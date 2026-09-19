@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import kstest
 from scoringrules import twcrps_ensemble as twcrps
 from scoringrules import twes_ensemble as twes
-from epf_engression.tail_calibration import (tc_prob_ensemble, tail_cal_curves_pooled, plot_tail_cal_curves,
+from tail_calibration import (tc_prob_ensemble, tail_cal_curves_pooled, plot_tail_cal_curves,
                                              plot_occ_by_horizon)
 from scipy.stats import norm
 
@@ -15,12 +15,12 @@ from scipy.stats import norm
 from pathlib import Path
 Y_DIR = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__raw__L2_H128_N32_LR0.0001_BS1024_E2000_ENS10_HETERO_True_HS_256")
 CGM_DIR = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression")
-ENG_EXP_DIR_1 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__raw__L2_H128_N32_LR0.0001_BS1024_E2000_ENS10")
+ENG_EXP_DIR_1 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__raw__L2_H128_N32_LR0.0001_BS1024_E2000_ENS10_HETERO_False_HS_256")
 ENG_EXP_DIR_1_E200 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__raw__L2_H128_N32_LR0.0001_BS1024_E200_ENS10_HETERO_False_HS_256")
 ENG_EXP_DIR_1_FULL_E200 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\full__compact_v1__raw__L2_H128_N32_LR0.0001_BS1024_E200_ENS10_HETERO_False_HS_256")
-ENG_EXP_DIR_2 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__resid_last__L2_H128_N32_LR0.0001_BS1024_E2000_ENS10")
+ENG_EXP_DIR_2 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__resid_last__L2_H128_N32_LR0.0001_BS1024_E2000_ENS10_HETERO_False_HS_256")
 CGM_HYBRID_DIR = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\hybrid_outputs")
-ENG_HTS_DIR_E16 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_hts\engression_hts_corr_corr__embed16__compact_v1__resid_last__L2_H128_N32_LR0.0001_BS1024_E200_ENS10")
+ENG_HTS_DIR_E16 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_hts\engression_hts_corr_corr__embed16__compact_v1__raw__L2_H128_N32_LR0.0001_BS1024_E200_ENS10")
 ENG_EXP_DIR_2_HETERO_ALL_256 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__resid_last__L2_H128_N32_LR0.0001_BS1024_E2000_ENS10_HETERO_True_HS_256")
 ENG_EXP_DIR_2_COMPLETE = Path(r"C:\Users\montenegrof\PycharmProjects\epf_cgm\engression_outputs_experiments\full__compact_v1__resid_last__L2_H128_N32_LR0.0001_BS1024_E2000_ENS10")
 ENG_EXP_DIR_1_HETERO_ALL_256 = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__raw__L2_H128_N32_LR0.0001_BS1024_E2000_ENS10_HETERO_True_HS_256")

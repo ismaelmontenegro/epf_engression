@@ -30,7 +30,7 @@ class ExperimentConfig:
 
     # Engression side
     feature_set: str = "compact_v1"
-    target_mode: str = "resid_last"   # keep best target
+    target_mode: str = "raw"
     benchmark_mode: str = "compact"
 
     # h_ts encoder

@@ -1,0 +1,12 @@
+.idea/
+__pycache__/
+**/__pycache__/
+
+engression_outputs/
+engression_outputs_experiments/
+engression_outputs_hts/
+engression_outputs_idx3_experiments/
+evaluation_outputs_*/
+hybrid_outputs/
+
+*.npy

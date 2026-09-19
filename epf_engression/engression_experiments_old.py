@@ -25,11 +25,11 @@ class ExperimentConfig:
     start_index: int = 168
     add_id_others: bool = True
 
-    benchmark_mode: str = "full"   # "compact" or "full"
+    benchmark_mode: str = "compact"   # "compact" or "full"
     feature_set: str = "compact_v1"   # "compact_v1", "compact_v2", ...
-    target_mode: str = "raw"          # "raw", "resid_last", "resid_da", "resid_id3"
+    target_mode: str = "resid_last"          # "raw", "resid_last", "resid_da", "resid_id3"
 
-    hetero_noise: bool = False
+    hetero_noise: bool = True
     scale_hidden_dim: int = 256
 
 
@@ -37,7 +37,7 @@ class ExperimentConfig:
     hidden_dim: int = 128
     noise_dim: int = 32
     lr: float = 1e-4
-    num_epochs: int = 200
+    num_epochs: int = 2000
     batch_size: int = 1024
     n_samples_test: int = 1000
     n_ensemble: int = 10

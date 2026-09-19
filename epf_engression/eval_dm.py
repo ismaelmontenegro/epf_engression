@@ -63,7 +63,7 @@ preds  = {k: maybe_subsample_samples(v, 200, seed=123) for k, v in preds.items()
 
 es_losses = {k: energy_score_per_obs(v, y_true) for k, v in preds.items()}
 stat, pval = dm_matrix(es_losses, lag=24)
-print(dm_latex(stat, pval, "DM statistics on the energy score, recent window.", "Tab:DMRecent"))
+print(dm_latex(stat, pval, "DM statistics on the energy score, old window.", "Tab:DMRecent"))
 
 print(dm_vs_reference(es_losses, reference="lasso_bootstrap", lag=24))
 print(rtp_baselines(y_true, build_stress_masks(y_true)))

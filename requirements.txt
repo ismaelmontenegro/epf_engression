@@ -1,0 +1,12 @@
+# Python 3.13
+numpy==2.4.4
+pandas==3.0.2
+pyarrow==23.0.1 # needed for the .feather files (lasso_y.feather, lasso_xy.feather)
+scipy==1.17.1
+scikit-learn==1.8.0
+statsmodels==0.14.6
+scoringrules==0.11.0
+matplotlib==3.10.8
+torch==2.11.0 # CUDA build (torch==2.11.0+cu128) used for the reported runs: see README
+tensorflow==2.21.0
+keras==3.14.0
