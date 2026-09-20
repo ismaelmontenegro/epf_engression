@@ -467,6 +467,10 @@ def build_feature_sets(feature_df):
         "id_std_hist_last",
         "id_std_hist_mean_24",
         "id_std_hist_std_24",
+        "res_load_pred_lag1",
+        "res_load_ramp_1",
+        "last_p_lag1",
+        "last_move_1",
     ]
 
     compact_v2 = compact_v1 + [
@@ -613,7 +617,7 @@ def build_run_name(cfg: ExperimentConfig) -> str:
         f"_LR{cfg.lr}"
         f"_BS{cfg.batch_size}"
         f"_E{cfg.num_epochs}"
-        f"_ENS{cfg.n_ensemble}"
+        f"_ENS{cfg.n_ensemble}_v2"
     )
 
 

@@ -8,10 +8,10 @@ import pandas as pd
 # ============================================================
 
 # Base directory containing ID_DATA/prices_hourly_XX
-CGM_DIR = Path(r"C:\Users\montenegrof\PycharmProjects\epf_cgm")
+CGM_DIR = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression")
 
 # Pick an experiment directory containing: y_train.npy, y_test.npy
-Y_DIR = Path(r"C:\Users\montenegrof\PycharmProjects\epf_cgm\engression_outputs_experiments_old\compact__compact_v1__resid_last__L2_H128_N32_LR0.0001_BS1024_E200_ENS10_withpv_corr3_hetero_all_256")
+Y_DIR = Path(r"C:\Users\Ismas\PycharmProjects\epf_engression\epf_engression\engression_outputs_experiments\compact__compact_v1__raw__L2_H128_N32_LR0.0001_BS1024_E200_ENS10_HETERO_False_HS_256")
 
 Y_TRAIN_FILE = Y_DIR / "y_train.npy"
 Y_TEST_FILE = Y_DIR / "y_test.npy"
@@ -392,45 +392,32 @@ def main():
     print("NAIVE ROLLING SAME-HOUR RESIDUAL BOOTSTRAP")
     print("=" * 85)
 
-    # ========================================================
-    # Load y
-    # ========================================================
-    y_train = ensure_y_shape(np.load(Y_TRAIN_FILE))
+    def read_raw_panel(data_dir: Path, cols) -> np.ndarray:
+        """(n_days, 24, len(cols)) from prices_hourly_XX; numeric cols: id_1..id_12 = 0..11, last_p = 12."""
+        folder = data_dir / "ID_DATA"
+        per_hour = []
+        for hour in range(24):
+            fpath = _resolve_hourly_file(folder=folder, stem="prices_hourly", hour=hour)
+            with open(fpath) as f:
+                rows = [[float(e) for e in line.strip().split(",")[1:]] for line in f.readlines()[1:]]
+            per_hour.append(np.asarray(rows)[:, cols])
+        return np.stack(per_hour, axis=1)
+
+    path_full = read_raw_panel(CGM_DIR, list(range(2, 12)))[7:]  # id_3..id_12, drop 7 burn-in days
+    last_p_full = read_raw_panel(CGM_DIR, [12])[7:, :, 0]
+
     y_test = ensure_y_shape(np.load(Y_TEST_FILE))
+    n_test_days = len(y_test) // 24
+    assert np.allclose(path_full[-n_test_days:].reshape(-1, 10), y_test, atol=1e-3), "raw/test misaligned"
 
-    print(f"\ny_train: {y_train.shape}")
-    print(f"y_test : {y_test.shape}")
-    print(f"\nTraining days: " f"{len(y_train) // 24}")
-    print(f"Test days: " f"{len(y_test) // 24}")
-
-    # ========================================================
-    # Align last_p
-    # ========================================================
-    (last_p_train, last_p_test) = build_aligned_last_p(
-        data_dir=CGM_DIR,
-        y_train=y_train,
-        y_test=y_test,
-    )
-
-    print(f"\nlast_p_train: " f"{last_p_train.shape}")
-    print(f"last_p_test : " f"{last_p_test.shape}")
-
-    # ========================================================
-    # Build probabilistic naive paths
-    # ========================================================
-    print("\nBuilding rolling same-hour " "probabilistic naive...")
-    print(f"Bootstrap window: " f"{BOOTSTRAP_WINDOW_DAYS} days")
-    print(f"Trajectories: " f"{N_TRAJ}")
+    # contiguous history: everything before the test block acts as "train" for the pool
+    y_hist = path_full[:-n_test_days].reshape(-1, 10)
+    lp_hist = last_p_full[:-n_test_days].reshape(-1)
+    lp_test = last_p_full[-n_test_days:].reshape(-1)
 
     naive_pred = build_naive_rolling_same_hour_bootstrap(
-        y_train=y_train,
-        y_test=y_test,
-        last_p_train=last_p_train,
-        last_p_test=last_p_test,
-        window_days=BOOTSTRAP_WINDOW_DAYS,
-        n_traj=N_TRAJ,
-        seed=SEED,
-    )
+        y_train=y_hist, y_test=y_test, last_p_train=lp_hist, last_p_test=lp_test,
+        window_days=BOOTSTRAP_WINDOW_DAYS, n_traj=N_TRAJ, seed=SEED)
 
     print(f"\nProbabilistic naive shape: " f"{naive_pred.shape}")
 
@@ -465,7 +452,7 @@ def main():
         metrics = evaluate_scalar_prob_forecast(samples=scalar_samples, y=y_scalar)
 
         # Original deterministic last_p MAE
-        deterministic_error = last_p_test - y_scalar
+        deterministic_error = lp_test - y_scalar
         deterministic_mae = float(np.mean(np.abs(deterministic_error)))
 
         # Print

@@ -36,7 +36,7 @@ MODEL_FILES = {
     "engression_experiment_1_hetero_all_256": ENG_EXP_DIR_1_HETERO_ALL_256 / "pred.npy", #engression, conditional scale, raw target, engineered features, best configuration
     "engression_compact": ENG_DIR_NO_FE / "pred_engression_compact_e200.npy", #engression, fixed scale, cgm raw, reduced history, 200 epochs (architecture search)
     "engression_full": ENG_DIR_NO_FE / "pred_engression_full_e200.npy", #engression, fixed scale, cgm raw, full history, 200 epochs (architecture search)
-    "engression_hts_16": ENG_HTS_DIR_E16 / "pred.npy", #engression, fixed scale, transformed target, embedding from learned encoder as additional input, 200 epochs (architecture search)
+    "engression_hts_16": ENG_HTS_DIR_E16 / "pred.npy", #engression, fixed scale, raw target, embedding from learned encoder as additional input, 200 epochs (architecture search)
     "cgm_hybrid": CGM_HYBRID_DIR / "pred_hybrid_esloss_2.npy", #cgm-engression hybrid
     "cgm_esloss": CGM_DIR / "pred_cgm_esloss.npy", # cgm with ES-loss
     "lasso_bootstrap": CGM_DIR / "lasso_bootstrap.npy", #standard lasso bootstrap
