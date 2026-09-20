@@ -617,7 +617,7 @@ def build_run_name(cfg: ExperimentConfig) -> str:
         f"_LR{cfg.lr}"
         f"_BS{cfg.batch_size}"
         f"_E{cfg.num_epochs}"
-        f"_ENS{cfg.n_ensemble}_v2"
+        f"_ENS{cfg.n_ensemble}"
     )
 
 
