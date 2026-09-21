@@ -16,29 +16,31 @@ Chen et al. (2025), on two chronologically disjoint evaluation windows.
 
 The recent-window dataset (December 2023 – April 2026) and the proprietary
 MetDesk forecast-update features belong to the industry partner and are not
-redistributable. This was agreed in advance. The code
-paths are identical across the two windows (before adding the MetDesk features as explained in section 4.5); only the input data differs.
+redistributable. This was agreed in advance. The same training and evaluation pipeline is used across the two windows.
+Window-specific configuration differences are documented below, most notably
+the Engression training length (2,000 epochs in the old window and 200 in the
+recent window) and the recent-only proprietary feature extensions.
 
 Reproducible here:
 
 | Thesis result | Content | Produced by |
 |---|---|---|
 | Table 4 | per-horizon CRPS, raw block, full vs. reduced history | `train_engression_from_cgm.py`, `eval_proper_old.py` |
-| Table 6, old-window rows | architecture search: block × history representation | `train_engression_from_cgm.py`, `engression_experiments_old.py`, `eval_proper_old.py` |
-| Section 4.1.4, old window | HTS encoder (ES in text) | `train_engression_hts_old.py`, `eval_proper_old.py` |
-| Table 8 | main model comparison | all main models, `eval_proper_old.py` |
-| Table 10 | Diebold–Mariano tests | `eval_dm.py` |
-| Table 13 | threshold-weighted energy score | `eval_proper_old.py` |
-| Table 15 | per-horizon PIT calibration | `eval_proper_old.py` |
-| Table 17 | pooled tail calibration | `eval_proper_old.py` |
-| Tables 18 and 19, old-window rows | target variance by horizon, resid_last and raw | `resid_last_var_by_h.py` |
-| Table 20 | spread–skill ratios | `spread_vs_error_h.py` |
-| Table 23 | matched fixed-window comparison | `lasso_stationary.py`, `lasso_bootstrap_stationary.py`, `eval_proper_old.py` |
-| Section 4.3.4, old window | CGM–Engression hybrid (scores in text) | `train_hybrid_cgm.py`, `eval_proper_old.py` |
-| Table 28 | realized trading potential by regime | `eval_proper_old.py` |
-| Table 30 | scalar index forecasts | `eval_proper_old.py` (path-collapsed, naive), `engression_experiments_indexes.py` + `eval_engression_experiments_indexes.py` (direct univariate), `naive_probabilistic_benchmark.py` (naive probabilistic) |
-| Table 32, old-window rows | naive-forecast ensemble | `eval_proper_old.py` |
-| Section A.1 | appendix figures, old window | `eval_proper_old.py`, `spread_vs_error_h.py` |
+| Table 6, old-window rows | architecture search: block × history representation   | `train_engression_from_cgm.py`, `engression_experiments_old.py`, `eval_proper_old.py` |
+| Section 4.1.4, old window | HTS encoder (ES in text)                              | `train_engression_hts_old.py`, `eval_proper_old.py` |
+| Table 8 | main model comparison                                 | all main models, `eval_proper_old.py` |
+| Table 10 | Diebold–Mariano tests                                 | `eval_dm.py` |
+| Table 13 | threshold-weighted energy score                       | `eval_proper_old.py` |
+| Table 15 | per-horizon PIT calibration                           | `eval_proper_old.py` |
+| Table 17 | horizon-averaged tail calibration                     | `eval_proper_old.py` |
+| Tables 18 and 19, old-window rows | target variance by horizon, resid_last and raw        | `resid_last_var_by_h.py` |
+| Table 20 | spread–skill ratios                                   | `spread_vs_error_h.py` |
+| Table 23 | matched fixed-window comparison                       | `lasso_stationary.py`, `lasso_bootstrap_stationary.py`, `eval_proper_old.py` |
+| Section 4.3.4, old window | CGM–Engression hybrid (scores in text)                | `train_hybrid_cgm.py`, `eval_proper_old.py` |
+| Table 28 | realized trading potential by regime                  | `eval_proper_old.py` |
+| Table 30 | scalar index forecasts                                | `eval_proper_old.py` (path-collapsed, naive), `engression_experiments_indexes.py` + `eval_engression_experiments_indexes.py` (direct univariate), `naive_probabilistic_benchmark.py` (naive probabilistic) |
+| Table 32, old-window rows | naive-forecast ensemble                               | `eval_proper_old.py` |
+| Section A.1 | appendix figures, old window                          | `eval_proper_old.py`, `spread_vs_error_h.py` |
 
 Not reproducible without the proprietary data: every recent-window table and
 figure, all MetDesk results (Sections 4.5 and 4.6.5), and the experiments that
@@ -69,6 +71,21 @@ The directory `epf_engression/engression_module/` is a modified copy of the
 `engression` package by Xinwei Shen and Nicolai Meinshausen
 (<https://github.com/xwshen51/engression>, v0.1.14, BSD 3-Clause License). It
 is imported as a local package and is not installed via its `setup.py`.
+
+Similarly, `epf_engression/cgm_epf.py`, `epf_engression/cgm_models.py`,
+`epf_engression/lasso.py`, and `epf_engression/lasso_bootstrap.py` are taken
+from the implementation by Jieyu Chen
+(<https://github.com/jieyu97/epf_cgm>, MIT License).
+
+The files `epf_engression/lasso_stationary.py`,
+`epf_engression/lasso_bootstrap_stationary.py`,
+`epf_engression/latent_perturbation_cgm_models.py`, and
+`epf_engression/train_hybrid_cgm.py` are modified versions of those benchmark
+implementations for the stationary-window and CGM–Engression hybrid
+experiments.
+
+The corresponding third-party license texts and copyright notices are
+reproduced in [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md).
 
 **Run every script from inside `epf_engression/`.** Several scripts use
 `./` as their data directory, and the scripts import each other by module
@@ -312,10 +329,13 @@ Evaluation conventions:
   (`N_EVAL_SAMPLES`), and to 200 draws (`N_SCORE_SAMPLES`) for the energy,
   CRPS, Dawid–Sebastiani and variogram scores, with a fixed seed (123), so
   models with 10,000 draws are scored on the same footing as Engression.
-- Thresholds are the top and bottom 10 % of test observations by the
-  mean price of the realised path.
+- For the descriptive and economic regime splits, forecast origins are classified
+  ex post using the mean realised path price: the middle 80% form the normal
+  regime and the lower/upper 10% the two stress regimes.
 - The thresholds for the threshold-weighted scores are the 10 % and 90 %
   quantiles of the pooled training-block paths (`y_train.npy`).
+- Reported path-level CRPS is the arithmetic mean of the ten marginal
+  horizon-specific CRPS values.
 - Diebold–Mariano tests use per-observation energy scores and a Newey–West
   variance with 24 lags.
 
@@ -348,8 +368,10 @@ Main outputs of `eval_proper_old.py`, written to `OUT_DIR`:
 - `lead = 4` — inputs are taken at least 4 hours before delivery, except the
   day-ahead price and the day-ahead wind and load forecasts, which are known in
   advance, and the `last_p` anchor at a 3-hour lead.
-- Normalisation statistics are computed on the **training block only** and
-  saved to `normalization_stats.json`.
+- Engression normalization statistics are computed on the **504-day training
+  block only** and saved to `normalization_stats.json`. `cgm_epf.py` follows
+  the original CGM implementation and computes its normalization statistics
+  over the full pre-test period before the 200-day test block.
 - The target is `id_3 … id_12`: sub-period VWAPs spanning three hours to
   30 minutes before delivery, with horizon 1 closest to delivery and horizon 10
   closest to the forecast origin.
@@ -358,6 +380,11 @@ Main outputs of `eval_proper_old.py`, written to `OUT_DIR`:
   numerically identical. The duplicate is retained so that this code matches
   the runs reported in the thesis; it is disclosed in the Implementation Note
   of Section 2.2.2.
+- The architecture and feature-representation search reported in Section 4.1
+  was exploratory and was conducted with test-block diagnostics visible.
+  Consequently, the test block is out of sample for model estimation but is
+  not a completely untouched holdout for those representation choices. No
+  model was fitted on the test block.
 
 ---
 
