@@ -400,8 +400,8 @@ not at all in the thesis:
 
 ## References
 
-Chen, Y., Janke, T., Steinke, F. and Lerch, S. (2025), *Generative machine
-learning methods for multivariate ensemble post-processing*, arXiv:2506.00044.
+Chen, J., Lerch, S., Schienle, M., Serafin, T. & Weron, R. (2025), *Probabilistic intraday electricity
+price forecasting using generative machine learning*, arXiv:2506.00044. 
 
 Shen, X. and Meinshausen, N. (2025), 'Engression: extrapolation through the
 lens of distributional regression', *Journal of the Royal Statistical Society
